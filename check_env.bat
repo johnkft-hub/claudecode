@@ -1,34 +1,36 @@
 @echo off
-chcp 65001 >nul
+setlocal
+
 echo ============================================
-echo  환경 진단
+echo  Environment Check
 echo ============================================
 echo.
 
-echo [1] Python 버전:
+echo [1] Python:
 python --version
-if errorlevel 1 echo   ^^^ Python 없음 - https://python.org 에서 설치 필요
+if errorlevel 1 echo     ^^^ NOT FOUND - install from https://python.org
 echo.
 
-echo [2] pip 버전:
+echo [2] pip:
 python -m pip --version
 echo.
 
-echo [3] git 버전:
+echo [3] git:
 git --version
-if errorlevel 1 echo   ^^^ git 없음 - https://git-scm.com 에서 설치 필요
+if errorlevel 1 echo     ^^^ NOT FOUND - install from https://git-scm.com
 echo.
 
-echo [4] ffmpeg 버전:
+echo [4] ffmpeg:
 ffmpeg -version 2>&1 | findstr "ffmpeg version"
-if errorlevel 1 echo   ^^^ ffmpeg 없음 - https://ffmpeg.org 에서 설치 필요
+if errorlevel 1 echo     ^^^ NOT FOUND - install from https://ffmpeg.org
 echo.
 
-echo [5] 설치된 패키지:
+echo [5] Installed packages:
 python -m pip show moviepy pillow gtts edge-tts 2>&1 | findstr "Name Version"
 echo.
 
 echo ============================================
-echo  진단 완료. 위 내용을 캡처해서 공유해주세요.
+echo  Done. Please share a screenshot if issues persist.
 echo ============================================
 pause
+endlocal
