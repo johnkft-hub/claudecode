@@ -1,0 +1,49 @@
+name: Make Shorts Video
+
+on:
+  workflow_dispatch:          # GitHub 웹에서 수동 실행
+    inputs:
+      output_name:
+        description: '출력 파일명 (예: my_shorts.mp4)'
+        required: false
+        default: 'my_shorts.mp4'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Python 설정
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: ffmpeg 설치
+        run: sudo apt-get install -y ffmpeg
+
+      - name: 한글 폰트 설치
+        run: |
+          sudo apt-get install -y fonts-nanum
+          mkdir -p shorts_maker/assets/fonts
+          cp /usr/share/fonts/truetype/nanum/NanumGothicBold.ttf \
+             shorts_maker/assets/fonts/NanumGothicBold.ttf
+
+      - name: 의존성 설치
+        run: pip install -r shorts_maker/requirements.txt
+
+      - name: 영상 생성
+        run: |
+          cd shorts_maker
+          python main.py
+        env:
+          OUTPUT_NAME: ${{ github.event.inputs.output_name }}
+
+      - name: 영상 업로드 (Artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: shorts-video
+          path: shorts_maker/output/*.mp4
+          retention-days: 7
