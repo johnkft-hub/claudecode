@@ -1,0 +1,7 @@
+moviepy==1.0.3
+pillow
+gtts
+edge-tts
+numpy
+requests
+python-dotenv
