@@ -2,19 +2,19 @@ import os
 
 import numpy as np
 from PIL import Image
-from moviepy.editor import ImageClip
+from moviepy import ImageClip
 
 from config import IMAGE_DIR, VIDEO_HEIGHT, VIDEO_WIDTH
 
 
 def load_background(image_path: str, duration: float):
     """로컬 이미지를 9:16 배경 클립으로 변환."""
-    clip = ImageClip(image_path).set_duration(duration)
-    clip = clip.resize(height=VIDEO_HEIGHT)
+    clip = ImageClip(image_path).with_duration(duration)
+    clip = clip.resized(height=VIDEO_HEIGHT)
     if clip.w < VIDEO_WIDTH:
-        clip = clip.resize(width=VIDEO_WIDTH)
+        clip = clip.resized(width=VIDEO_WIDTH)
     x_center = clip.w / 2
-    clip = clip.crop(x_center=x_center, width=VIDEO_WIDTH, height=VIDEO_HEIGHT)
+    clip = clip.cropped(x_center=x_center, width=VIDEO_WIDTH, height=VIDEO_HEIGHT)
     return clip
 
 
@@ -30,7 +30,7 @@ def generate_gradient_background(color1: tuple, color2: tuple, duration: float):
             img.putpixel((x, y), (r, g, b))
 
     arr = np.array(img)
-    return ImageClip(arr).set_duration(duration)
+    return ImageClip(arr).with_duration(duration)
 
 
 def get_background(scene, duration: float):
@@ -38,5 +38,4 @@ def get_background(scene, duration: float):
     if scene.image_path and os.path.exists(scene.image_path):
         return load_background(scene.image_path, duration)
 
-    # 폴백: 어두운 보라빛 그라디언트
     return generate_gradient_background((20, 20, 40), (60, 20, 80), duration)

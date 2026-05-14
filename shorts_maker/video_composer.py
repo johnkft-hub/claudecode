@@ -1,12 +1,10 @@
 import os
 import tempfile
 
-from moviepy.editor import (
+from moviepy import (
     AudioFileClip, CompositeAudioClip, CompositeVideoClip,
-    ImageClip, concatenate_videoclips,
+    ImageClip, concatenate_videoclips, vfx, afx
 )
-from moviepy.video.fx.fadein import fadein
-from moviepy.video.fx.fadeout import fadeout
 
 from bgm_engine import get_bgm
 from config import OUTPUT_DIR, VIDEO_FPS
@@ -27,14 +25,14 @@ def compose_scene(scene, temp_dir: str):
 
     subtitle_arr = make_subtitle_frame(scene.subtitle)
     subtitle_clip = (
-        ImageClip(subtitle_arr, ismask=False)
-        .set_duration(duration)
-        .set_opacity(1.0)
+        ImageClip(subtitle_arr, is_mask=False)
+        .with_duration(duration)
+        .with_opacity(1.0)
     )
 
     video = CompositeVideoClip([bg_clip, subtitle_clip], size=(bg_clip.w, bg_clip.h))
-    video = video.set_audio(tts_audio)
-    video = fadein(video, 0.3).fx(fadeout, 0.3)
+    video = video.with_audio(tts_audio)
+    video = video.with_effects([vfx.FadeIn(0.3), vfx.FadeOut(0.3)])
 
     return video
 
@@ -50,9 +48,9 @@ def compose_video(scenes: list, output_name: str = "shorts_output.mp4") -> str:
         bgm = get_bgm(final.duration)
         if bgm and final.audio:
             mixed = CompositeAudioClip([final.audio, bgm])
-            final = final.set_audio(mixed)
+            final = final.with_audio(mixed)
         elif bgm:
-            final = final.set_audio(bgm)
+            final = final.with_audio(bgm)
 
         output_path = os.path.join(OUTPUT_DIR, output_name)
         final.write_videofile(

@@ -1,7 +1,7 @@
 import os
 import random
 
-from moviepy.editor import AudioFileClip, concatenate_audioclips
+from moviepy import AudioFileClip, concatenate_audioclips, afx
 
 from config import BGM_DIR, BGM_VOLUME
 
@@ -16,10 +16,10 @@ def get_bgm(total_duration: float):
         return None
 
     bgm_path = os.path.join(BGM_DIR, random.choice(bgm_files))
-    bgm = AudioFileClip(bgm_path).volumex(BGM_VOLUME)
+    bgm = AudioFileClip(bgm_path).with_multiply_volume(BGM_VOLUME)
 
     if bgm.duration < total_duration:
         loops = int(total_duration / bgm.duration) + 1
         bgm = concatenate_audioclips([bgm] * loops)
 
-    return bgm.subclip(0, total_duration).audio_fadeout(2.0)
+    return bgm.subclipped(0, total_duration).with_effects([afx.AudioFadeOut(2.0)])
