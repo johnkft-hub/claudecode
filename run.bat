@@ -65,4 +65,8 @@ echo [실행] 프로그램을 시작합니다...
 cd /d "%SHORTS_DIR%"
 python gui.py
 
+:END
+echo.
+echo 프로그램이 종료됐습니다.
+pause
 endlocal
