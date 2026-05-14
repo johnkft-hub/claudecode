@@ -1,0 +1,7 @@
+moviepy
+pillow
+gtts
+edge-tts
+numpy
+requests
+python-dotenv
