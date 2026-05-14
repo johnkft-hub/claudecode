@@ -41,7 +41,9 @@ def compose_video(scenes: list, output_name: str = "shorts_output.mp4") -> str:
     """모든 장면을 하나의 MP4로 합성 후 경로 반환."""
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    with tempfile.TemporaryDirectory() as temp_dir:
+    temp_dir = tempfile.mkdtemp()
+    clips = []
+    try:
         clips = [compose_scene(s, temp_dir) for s in scenes]
         final = concatenate_videoclips(clips, method="compose")
 
@@ -61,5 +63,19 @@ def compose_video(scenes: list, output_name: str = "shorts_output.mp4") -> str:
             threads=4,
             preset="fast",
         )
+    finally:
+        # 파일 핸들 해제 후 임시 폴더 삭제 (Windows 파일 잠금 방지)
+        for clip in clips:
+            try:
+                clip.close()
+            except Exception:
+                pass
+        import shutil, time
+        for _ in range(5):
+            try:
+                shutil.rmtree(temp_dir, ignore_errors=True)
+                break
+            except Exception:
+                time.sleep(0.5)
 
     return output_path
